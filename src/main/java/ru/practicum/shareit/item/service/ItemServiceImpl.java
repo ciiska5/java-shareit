@@ -29,7 +29,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItemsOfUser (Long userId) {
+    public List<ItemDto> getAllItemsOfUser(Long userId) {
         return itemDAO.getAllItemsOfUser(userId);
     }
 

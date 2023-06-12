@@ -40,7 +40,7 @@ public class ItemController {
 
     //просмотр всех вещей владельца (только самим владельцем)
     @GetMapping
-    public List<ItemDto> getAllItemsOfUser (@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDto> getAllItemsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.getAllItemsOfUser(userId);
     }
 

@@ -29,7 +29,7 @@ public class InMemoryItemDaoImpl implements ItemDAO {
         item.setUserId(userId);
 
         items.compute(userId, (userIds, userItems) -> {
-            if(userItems == null) {
+            if (userItems == null) {
                 userItems = new ArrayList<>();
             }
             userItems.add(item);
@@ -43,7 +43,7 @@ public class InMemoryItemDaoImpl implements ItemDAO {
     @Override
     public ItemDto updateItem(ItemDto itemDto, Long userId, Long itemId) {
         checkUsersExistenceById(userId);
-        if(items.get(userId) == null) {
+        if (items.get(userId) == null) {
             log.error("У пользователя с id = {} нет вещей для аренды. ", userId);
             throw new ItemNotFoundException("У пользователя с id = " + userId + " нет вещей для аренды.");
         }
@@ -56,15 +56,15 @@ public class InMemoryItemDaoImpl implements ItemDAO {
         String itemDescription = itemDto.getDescription();
         Boolean itemAvailable = itemDto.getAvailable();
 
-        if(optionalItem.isPresent()) {
+        if (optionalItem.isPresent()) {
             Item item = optionalItem.get();
-            if(itemName != null) {
+            if (itemName != null) {
                 item.setName(itemDto.getName());
             }
-            if(itemDescription != null) {
+            if (itemDescription != null) {
                 item.setDescription(itemDto.getDescription());
             }
-            if(itemAvailable != null) {
+            if (itemAvailable != null) {
                 item.setAvailable(itemDto.getAvailable());
             }
             log.info("У пользователя с id = {} обновлена вещь с id = {}. ", userId, itemId);
@@ -94,7 +94,7 @@ public class InMemoryItemDaoImpl implements ItemDAO {
     }
 
     @Override
-    public List<ItemDto> getAllItemsOfUser (Long userId) {
+    public List<ItemDto> getAllItemsOfUser(Long userId) {
         checkUsersExistenceById(userId);
         List<ItemDto> userItems = new ArrayList<>();
         items.get(userId).forEach(item -> userItems.add(ItemMapper.toItemDto(item)));
@@ -105,7 +105,7 @@ public class InMemoryItemDaoImpl implements ItemDAO {
     @Override
     public List<ItemDto> getItemsByRequestText(Long userId, String text) {
         List<ItemDto> foundItemsDto = new ArrayList<>();
-        if(!text.isEmpty()) {
+        if (!text.isEmpty()) {
             String lowerCaseText = text.toLowerCase();
             foundItemsDto = getAllItemsDto()
                     .stream()
@@ -114,7 +114,7 @@ public class InMemoryItemDaoImpl implements ItemDAO {
                             itemDto.getDescription().toLowerCase().contains(lowerCaseText)))
                     .collect(Collectors.toList());
 
-            if(foundItemsDto.isEmpty()) {
+            if (foundItemsDto.isEmpty()) {
                 log.info("Для пользователя с id = {} по его запросу \"{}\" ничего не найдено.", userId, text);
             } else {
                 log.info("Для пользователя с id = {} по его запросу \"{}\" количество найденных результатов равно {}",
@@ -129,13 +129,14 @@ public class InMemoryItemDaoImpl implements ItemDAO {
 
     //получение id для вещи
     private long lastId = 1;
+
     private Long getId() {
         return lastId++;
     }
 
     //проверка пользователя на существование
     private void checkUsersExistenceById(Long userId) {
-        if(userDAO.getUserById(userId) == null) {
+        if (userDAO.getUserById(userId) == null) {
             log.error("Пользователь с id = {} не найден. ", userId);
             throw new UserNotFoundException("Пользователь с id = " + userId + " не найден.");
         }
