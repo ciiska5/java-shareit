@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserDAO {
 
-    User addNewUser(User user);
+    void addNewUser(User user);
 
     User getUserById(Long userId);
 

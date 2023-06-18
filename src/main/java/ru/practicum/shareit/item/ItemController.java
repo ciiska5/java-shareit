@@ -9,7 +9,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * TODO Sprint add-controllers.
+ * Класс-контроллер сущности Item
  */
 @RestController
 @RequestMapping("/items")

@@ -6,50 +6,48 @@ import ru.practicum.shareit.exception.EmailExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class InMemoryUserDAOImpl implements UserDAO {
 
-    private final List<User> users = new ArrayList<>();
+    private final Map<Long, User> users = new HashMap<>();
+
+    private final Set<String> emails = new HashSet<>(); //сет для хранения уникальных e-mail
 
     @Override
-    public User addNewUser(User user) {
-        checkDuplicateEmail(user.getEmail());
+    public void addNewUser(User user) {
+        String email = user.getEmail();
+        checkDuplicateEmail(email);
         user.setId(getId());
-        users.add(user);
         log.info("Добавлен новый пользователь с id = {}. ", user.getId());
-        return user;
+        users.put(user.getId(), user);
     }
 
     @Override
     public User getUserById(Long userId) {
         checkUsersExistenceById(userId);
         log.info("Пользователь с id = {} получен. ", userId);
-        return users.stream()
-                .filter(user -> Objects.equals(user.getId(), userId))
-                .findFirst()
-                .orElse(null);
+        return users.get(userId);
     }
 
     @Override
     public List<User> getAllUsers() {
         log.info("Получены все пользователи.");
-        return users;
+        return users.values().parallelStream().collect(Collectors.toList());
     }
 
     @Override
     public User updateUser(User user, Long userId) {
         User updatingUser = getUserById(userId);
+        String oldEmail = updatingUser.getEmail();
         String newEmail = user.getEmail();
         String newName = user.getName();
-        if (newEmail != null) {
-            if (!newEmail.equals(updatingUser.getEmail())) {
-                checkDuplicateEmail(newEmail);
-            }
+        if (newEmail != null && !newEmail.equals(oldEmail)) {
+            checkDuplicateEmail(newEmail);
+            emails.remove(oldEmail);
             updatingUser.setEmail(newEmail);
         }
         if (newName != null) {
@@ -62,11 +60,9 @@ public class InMemoryUserDAOImpl implements UserDAO {
     @Override
     public void deleteUserById(Long userId) {
         checkUsersExistenceById(userId);
+        emails.remove(getUserById(userId).getEmail());
         log.info("Пользователь с id = {} удален. ", userId);
-        users.remove(users.stream()
-                .filter(user -> Objects.equals(user.getId(), userId))
-                .findFirst()
-                .orElseThrow());
+        users.remove(userId);
     }
 
     //получение id для пользователя
@@ -78,8 +74,7 @@ public class InMemoryUserDAOImpl implements UserDAO {
 
     //проверка e-mail на повтор
     private void checkDuplicateEmail(String email) {
-        if (users.stream()
-                .anyMatch(user -> user.getEmail().equals(email))) {
+        if (!emails.add(email)) {
             log.error("Введенный e-mail занят другим пользователем");
             throw new EmailExistsException("Введенный e-mail занят другим пользователем");
         }
@@ -87,8 +82,7 @@ public class InMemoryUserDAOImpl implements UserDAO {
 
     //проверка пользователя на существование
     private void checkUsersExistenceById(Long userId) {
-        if (users.stream()
-                .noneMatch(user -> Objects.equals(user.getId(), userId))) {
+        if (!users.containsKey(userId)) {
             log.error("Пользователь с id = {} не найден. ", userId);
             throw new UserNotFoundException("Пользователь с id " + userId + " не найден");
         }

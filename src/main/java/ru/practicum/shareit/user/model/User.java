@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.*;
 
 /**
- * TODO Sprint add-controllers.
+ * Шаблон объекта User для хранилища
  */
 
 @Data

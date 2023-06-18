@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.dao.UserDAO;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,113 +16,88 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InMemoryItemDaoImpl implements ItemDAO {
 
-    private final Map<Long, List<Item>> items = new HashMap<>();
-    private final UserDAO userDAO;
+    private final Map<Long, List<Item>> usersItems = new HashMap<>(); //userId:userItemsList
+    private final Map<Long, Item> items = new HashMap<>();//itemId:item
 
     @Override
-    public ItemDto addNewItem(ItemDto itemDto, Long userId) {
-        checkUsersExistenceById(userId);
-        Item item = ItemMapper.toItem(itemDto);
-        item.setId(getId());
-        item.setUserId(userId);
+    public void addNewItem(Item item, Long userId) {
+        Long itemId = getId();
+        item.setId(itemId);
+        items.put(itemId, item);
 
-        items.compute(userId, (userIds, userItems) -> {
+        usersItems.compute(userId, (userIds, userItems) -> {
             if (userItems == null) {
                 userItems = new ArrayList<>();
             }
             userItems.add(item);
             return userItems;
         });
-
-        log.info("Пользователем с id = {} добавлена вещь c id = {}.", userId, item.getId());
-        return ItemMapper.toItemDto(item);
     }
 
     @Override
-    public ItemDto updateItem(ItemDto itemDto, Long userId, Long itemId) {
-        checkUsersExistenceById(userId);
-        if (items.get(userId) == null) {
+    public Item updateItem(Item item, Long userId, Long itemId) {
+        List<Item> userItems = usersItems.get(userId);
+        Item updatingItem = items.get(itemId);
+        if (userItems == null) {
             log.error("У пользователя с id = {} нет вещей для аренды. ", userId);
             throw new ItemNotFoundException("У пользователя с id = " + userId + " нет вещей для аренды.");
         }
-
-        Optional<Item> optionalItem = items.get(userId).stream()
-                .filter(item1 -> item1.getId().equals(itemId))
-                .findFirst();
-
-        String itemName = itemDto.getName();
-        String itemDescription = itemDto.getDescription();
-        Boolean itemAvailable = itemDto.getAvailable();
-
-        if (optionalItem.isPresent()) {
-            Item item = optionalItem.get();
+        if (updatingItem == null) {
+            log.error("Вещь с id = {} не найдена. ", itemId);
+            throw new ItemNotFoundException("Вещь с id = " + itemId + " нет найдена.");
+        } else {
+            String itemName = item.getName();
+            String itemDescription = item.getDescription();
+            Boolean itemAvailable = item.getAvailable();
             if (itemName != null) {
-                item.setName(itemDto.getName());
+                updatingItem.setName(itemName);
             }
             if (itemDescription != null) {
-                item.setDescription(itemDto.getDescription());
+                updatingItem.setDescription(itemDescription);
             }
             if (itemAvailable != null) {
-                item.setAvailable(itemDto.getAvailable());
+                updatingItem.setAvailable(itemAvailable);
             }
             log.info("У пользователя с id = {} обновлена вещь с id = {}. ", userId, itemId);
-            return ItemMapper.toItemDto(item);
+            return updatingItem;
         }
-
-        log.error("У пользователя с id = {} нет вещи с id = {} в аренде", userId, itemId);
-        throw new ItemNotFoundException("У пользователя с id = " + userId + " нет вещей для аренды");
     }
 
     @Override
-    public ItemDto getItemById(Long userId, Long itemId) {
-        checkUsersExistenceById(userId);
-
-        Optional<ItemDto> itemDto = getAllItemsDto()
-                .stream()
-                .filter(itemDto1 -> itemDto1.getId().equals(itemId))
-                .findFirst();
-
-        if (itemDto.isEmpty()) {
-            log.error("Вещь с id = {} не найдена", itemId);
-            throw new ItemNotFoundException("Вещь с id = " + itemId + " не найдена");
-        }
-
-        log.info("Получена вещь с id = {}.", itemId);
-        return itemDto.get();
+    public Item getItemById(Long userId, Long itemId) {
+        return items.get(itemId);
     }
 
     @Override
-    public List<ItemDto> getAllItemsOfUser(Long userId) {
-        checkUsersExistenceById(userId);
-        List<ItemDto> userItems = new ArrayList<>();
-        items.get(userId).forEach(item -> userItems.add(ItemMapper.toItemDto(item)));
+    public List<Item> getAllItemsOfUser(Long userId) {
         log.info("Пользователем с id = {} получены все его вещи. ", userId);
-        return userItems;
+        return usersItems.get(userId);
     }
 
     @Override
-    public List<ItemDto> getItemsByRequestText(Long userId, String text) {
-        List<ItemDto> foundItemsDto = new ArrayList<>();
+    public List<Item> getItemsByRequestText(Long userId, String text) {
+        List<Item> foundItems = new ArrayList<>();
         if (!text.isEmpty()) {
             String lowerCaseText = text.toLowerCase();
-            foundItemsDto = getAllItemsDto()
+            foundItems = items
+                    .values()
                     .stream()
-                    .filter(itemDto -> itemDto.getAvailable().equals(Boolean.TRUE) &&
-                            ((itemDto.getName().toLowerCase().contains(lowerCaseText)) ||
-                            itemDto.getDescription().toLowerCase().contains(lowerCaseText)))
+                    .filter(item -> item.getAvailable().equals(Boolean.TRUE) &&
+                            ((item.getName().toLowerCase().contains(lowerCaseText)) ||
+                            item.getDescription().toLowerCase().contains(lowerCaseText)))
                     .collect(Collectors.toList());
 
-            if (foundItemsDto.isEmpty()) {
+            if (foundItems.isEmpty()) {
                 log.info("Для пользователя с id = {} по его запросу \"{}\" ничего не найдено.", userId, text);
             } else {
                 log.info("Для пользователя с id = {} по его запросу \"{}\" количество найденных результатов равно {}",
-                        userId, text, foundItemsDto.size());
+                        userId, text, foundItems.size());
             }
         } else {
             log.error("Пользователем с id = {} задан пустой поисковый запрос.", userId);
         }
 
-        return foundItemsDto;
+        return foundItems;
     }
 
     //получение id для вещи
@@ -132,23 +105,5 @@ public class InMemoryItemDaoImpl implements ItemDAO {
 
     private Long getId() {
         return lastId++;
-    }
-
-    //проверка пользователя на существование
-    private void checkUsersExistenceById(Long userId) {
-        if (userDAO.getUserById(userId) == null) {
-            log.error("Пользователь с id = {} не найден. ", userId);
-            throw new UserNotFoundException("Пользователь с id = " + userId + " не найден.");
-        }
-    }
-
-    //получение всех вещей
-    private List<ItemDto> getAllItemsDto() {
-        List<ItemDto> allItemsDto = new ArrayList<>();
-        items.values()
-                .forEach(items1 -> items1
-                        .forEach(item -> allItemsDto.add(ItemMapper.toItemDto(item))));
-
-        return allItemsDto;
     }
 }

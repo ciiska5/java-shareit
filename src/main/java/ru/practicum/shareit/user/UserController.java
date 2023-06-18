@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -9,7 +10,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * TODO Sprint add-controllers.
+ * Класс-контроллер сущности User
  */
 @RestController
 @RequestMapping("/users")
@@ -20,26 +21,26 @@ public class UserController {
 
     //добавление нового пользователя
     @PostMapping
-    public User addNewUser(@Valid @RequestBody User user) {
-        return userService.addNewUser(user);
+    public UserDto addNewUser(@Valid @RequestBody UserDto userDto) {
+        return userService.addNewUser(userDto);
     }
 
     //получение пользователя по id
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable("userId") Long userId) {
+    public UserDto getUserById(@PathVariable("userId") Long userId) {
         return userService.getUserById(userId);
     }
 
     //получение всех пользователей
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
 
     //обновление пользователя
     @PatchMapping("/{userId}")
-    public User updateUser(@RequestBody User user, @PathVariable("userId") Long userId) {
-        return userService.updateUser(user, userId);
+    public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable("userId") Long userId) {
+        return userService.updateUser(userDto, userId);
     }
 
     //удаление пользователя по id
