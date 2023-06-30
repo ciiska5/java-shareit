@@ -83,7 +83,7 @@ public class ItemServiceImpl implements ItemService {
         ItemDateDto itemDateDto = ItemMapper.toItemDateDto(item);
 
         if (item.getOwner().getId().equals(userId)) {
-            List <Booking> ascBookingList = bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartAsc(
+            List<Booking> ascBookingList = bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartAsc(
                     itemId, BookingStatus.APPROVED);
             if (!ascBookingList.isEmpty()) {
                 int bookingListSize = ascBookingList.size();
@@ -129,7 +129,7 @@ public class ItemServiceImpl implements ItemService {
 
         userItemsDateDto.forEach(itemDateDto -> {
             Long itemId = itemDateDto.getId();
-            List <Booking> ascBookingList = bookingRepository.findAllByItemIdOrderByStartAsc(itemId);
+            List<Booking> ascBookingList = bookingRepository.findAllByItemIdOrderByStartAsc(itemId);
             itemDateDto.setLastBooking(
                     ascBookingList.isEmpty() ? null : BookingMapper.toBookingDateDto(ascBookingList.get(0))
             );

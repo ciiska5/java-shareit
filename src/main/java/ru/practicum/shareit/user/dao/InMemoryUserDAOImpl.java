@@ -7,7 +7,6 @@ import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
