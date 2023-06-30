@@ -1,8 +1,13 @@
 package ru.practicum.shareit.item.mapper;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.dto.BookingDateDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.item.dto.ItemDateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+
+import java.util.ArrayList;
 
 @Component
 public class ItemMapper {
@@ -12,7 +17,19 @@ public class ItemMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable()
+                item.getAvailable(),
+                item.getRequest(),
+                new ArrayList<>()
+        );
+    }
+
+    public static ItemDateDto toItemDateDto(Item item) {
+        return new ItemDateDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                item.getRequest()
         );
     }
 

@@ -3,24 +3,16 @@ package ru.practicum.shareit.booking.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.status.BookingStatus;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-/**
- * Шаблон объекта Booking для пользователя
- */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto {
-
+public class BookingDateDto {
     private Long id; // уникальный идентификатор бронирования
 
     @NotNull
@@ -31,9 +23,7 @@ public class BookingDto {
     @Future
     private LocalDateTime end; // дата и время конца бронирования
 
-    private Item item;// вещь, которую пользователь бронирует
+    private Long itemId;// вещь, которую пользователь бронирует
 
-    private User booker; // пользователь, который осуществляет бронирование;
-
-    private BookingStatus status; // статус бронирования
+    private Long bookerId; // пользователь, который осуществляет бронирование;
 }

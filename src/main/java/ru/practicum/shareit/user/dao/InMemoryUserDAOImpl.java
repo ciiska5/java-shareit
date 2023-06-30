@@ -28,15 +28,15 @@ public class InMemoryUserDAOImpl implements UserDAO {
 
     @Override
     public User getUserById(Long userId) {
-        checkUsersExistenceById(userId);
+        User user = checkUsersExistenceById(userId);
         log.info("Пользователь с id = {} получен. ", userId);
-        return users.get(userId);
+        return user;
     }
 
     @Override
     public List<User> getAllUsers() {
         log.info("Получены все пользователи.");
-        return users.values().parallelStream().collect(Collectors.toList());
+        return new ArrayList<>(users.values());
     }
 
     @Override
@@ -81,10 +81,12 @@ public class InMemoryUserDAOImpl implements UserDAO {
     }
 
     //проверка пользователя на существование
-    private void checkUsersExistenceById(Long userId) {
-        if (!users.containsKey(userId)) {
+    private User checkUsersExistenceById(Long userId) {
+        User user = users.get(userId);
+        if (user == null) {
             log.error("Пользователь с id = {} не найден. ", userId);
             throw new UserNotFoundException("Пользователь с id " + userId + " не найден");
         }
+        return user;
     }
 }
