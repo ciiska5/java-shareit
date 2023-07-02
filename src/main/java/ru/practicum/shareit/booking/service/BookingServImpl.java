@@ -30,7 +30,7 @@ public class BookingServImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private final Sort sort = Sort.by(Sort.Direction.DESC, "start"); //параметр для сортировки бронирований от старых к новым
+    private static final Sort sort = Sort.by(Sort.Direction.DESC, "start"); //параметр для сортировки бронирований от старых к новым
 
     @Override
     @Transactional
@@ -56,7 +56,7 @@ public class BookingServImpl implements BookingService {
         booking.setBooker(user);
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
-        bookingRepository.save(booking);
+        booking = bookingRepository.save(booking);
         log.info("Пользователь с id = {} забронировал вещь с id = {}. ", userId, item.getId());
         return BookingMapper.toBookingDto(booking);
     }

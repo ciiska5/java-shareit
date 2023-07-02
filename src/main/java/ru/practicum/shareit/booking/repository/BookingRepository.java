@@ -61,6 +61,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     //получение букингов для определённой вещи по возрастанию даты начала бронирования
     List<Booking> findAllByItemIdOrderByStartAsc(Long itemId);
 
+    List<Booking> findAllByItemOwnerIdOrderByStartAsc(Long ownerId);
+
     //получение букингов вещей, которые совершал пользователь до оставления комментариев к этим вещам
     List<Booking> findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(
             Long bookerId, Long itemId, BookingStatus status, LocalDateTime end

@@ -44,7 +44,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.toItem(itemDto);
         User user = checkUsersExistenceById(userId);
         item.setOwner(user);
-        itemRepository.save(item);
+        item = itemRepository.save(item);
         log.info("Пользователем с id = {} добавлена вещь c id = {}.", userId, item.getId());
         return ItemMapper.toItemDto(item);
     }
@@ -52,13 +52,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDto updateItem(ItemDto itemDto, Long userId, Long itemId) {
-        List<Item> userItems = itemRepository.findAllItemsByOwnerId(userId);
-        if (userItems == null) {
-            log.error("У пользователя с id = {} нет вещей для аренды. ", userId);
-            throw new ItemNotFoundException("У пользователя с id = " + userId + " нет вещей для аренды.");
-        }
         checkUsersExistenceById(userId);
         Item updatingItem = checkItemsExistenceById(itemId);
+        if (!updatingItem.getOwner().getId().equals(userId)) {
+            log.error("У пользователя с id = {} нет вещи для аренды с id = {} ", userId, itemId);
+            throw new ItemNotFoundException("У пользователя с id = " + userId + " нет вещи для аренды с id = " + itemId);
+        }
         String itemName = itemDto.getName();
         String itemDescription = itemDto.getDescription();
         Boolean itemAvailable = itemDto.getAvailable();
@@ -85,28 +84,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwner().getId().equals(userId)) {
             List<Booking> ascBookingList = bookingRepository.findAllByItemIdAndStatusEqualsOrderByStartAsc(
                     itemId, BookingStatus.APPROVED);
-            if (!ascBookingList.isEmpty()) {
-                int bookingListSize = ascBookingList.size();
-                if (bookingListSize == 1) {
-                    if (ascBookingList.get(0).getStart().isBefore(LocalDateTime.now())) {
-                        itemDateDto.setLastBooking(BookingMapper.toBookingDateDto(ascBookingList.get(0)));
-                        itemDateDto.setNextBooking(null);
-                    } else {
-                        itemDateDto.setLastBooking(null);
-                        itemDateDto.setNextBooking(BookingMapper.toBookingDateDto(ascBookingList.get(0)));
-                    }
-                } else {
-                    int i = -1;
-                    do {
-                        i++;
-                    } while (ascBookingList.get(i).getStart().isBefore(LocalDateTime.now()));
-                    itemDateDto.setNextBooking(BookingMapper.toBookingDateDto(ascBookingList.get(i)));
-                    itemDateDto.setLastBooking(BookingMapper.toBookingDateDto(ascBookingList.get(i - 1)));
-                }
-            } else {
-                itemDateDto.setLastBooking(null);
-                itemDateDto.setNextBooking(null);
-            }
+            setLastAndNextBooking(ascBookingList, itemDateDto);
         }
 
         List<CommentDto> itemCommentsList =
@@ -126,21 +104,21 @@ public class ItemServiceImpl implements ItemService {
         List<ItemDateDto> userItemsDateDto = new ArrayList<>();
         userItems.forEach(item -> userItemsDateDto.add(ItemMapper.toItemDateDto(item)));
 
+        List<Booking> ascBookingList = bookingRepository.findAllByItemOwnerIdOrderByStartAsc(userId);
+        List<Comment> userItemsCommentsList = commentRepository.findAllByItemIn(userItems);
 
         userItemsDateDto.forEach(itemDateDto -> {
             Long itemId = itemDateDto.getId();
-            List<Booking> ascBookingList = bookingRepository.findAllByItemIdOrderByStartAsc(itemId);
-            itemDateDto.setLastBooking(
-                    ascBookingList.isEmpty() ? null : BookingMapper.toBookingDateDto(ascBookingList.get(0))
-            );
-            itemDateDto.setNextBooking(
-                    itemDateDto.getLastBooking() == null ||
-                            ascBookingList.size() == 1 ? null : BookingMapper.toBookingDateDto(ascBookingList.get(1))
-            );
-            List<Comment> itemCommentsList = commentRepository.findAllByItemId(itemId);
-            itemDateDto.setComments(
-                    itemCommentsList.stream().map(CommentMapper::toCommentDto).collect(Collectors.toList())
-            );
+            List<Booking> ascBookingListOfItem = ascBookingList.stream().filter(booking ->
+                booking.getItem().getId().equals(itemId)).collect(Collectors.toList());
+
+            setLastAndNextBooking(ascBookingListOfItem, itemDateDto);
+
+            List<CommentDto> commentDtoListOfItem = userItemsCommentsList.stream().filter(comment ->
+                    comment.getItem().getId().equals(itemId)).collect(Collectors.toList())
+                    .stream().map(CommentMapper::toCommentDto).collect(Collectors.toList());
+
+            itemDateDto.setComments(commentDtoListOfItem);
         });
 
         log.info("Получены все вещи пользователя-владельца с id = {}", userId);
@@ -151,16 +129,14 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemDto> getItemsByRequestText(Long userId, String text) {
         checkUsersExistenceById(userId);
-        List<Item> items = itemRepository.findAll();
         List<Item> foundItems = new ArrayList<>();
 
         if (!text.isEmpty()) {
             String lowerCaseText = text.toLowerCase();
+            List<Item> items = itemRepository.findAllItemsByText(lowerCaseText);
             foundItems = items
                     .stream()
-                    .filter(item -> item.getAvailable().equals(Boolean.TRUE) &&
-                            ((item.getName().toLowerCase().contains(lowerCaseText)) ||
-                                    item.getDescription().toLowerCase().contains(lowerCaseText)))
+                    .filter(item -> item.getAvailable().equals(Boolean.TRUE))
                     .collect(Collectors.toList());
 
             if (foundItems.isEmpty()) {
@@ -200,7 +176,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setItem(item);
         comment.setAuthor(user);
         comment.setCreated(LocalDateTime.now());
-        commentRepository.save(comment);
+        comment = commentRepository.save(comment);
 
         log.info("Пользователь с id = {} оставил отзыв на вещь с id = {}. ", userId, itemId);
         return CommentMapper.toCommentDto(comment);
@@ -216,5 +192,31 @@ public class ItemServiceImpl implements ItemService {
     private Item checkItemsExistenceById(Long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с id = " + itemId + " не найден."));
+    }
+
+    //присваивание даты последнего и ближайшего следующего бронирования для каждой вещи
+    private void setLastAndNextBooking(List<Booking> bookingsList, ItemDateDto itemDateDto) {
+        if (!bookingsList.isEmpty()) {
+            int bookingListSize = bookingsList.size();
+            if (bookingListSize == 1) {
+                if (bookingsList.get(0).getStart().isBefore(LocalDateTime.now())) {
+                    itemDateDto.setLastBooking(BookingMapper.toBookingDateDto(bookingsList.get(0)));
+                    itemDateDto.setNextBooking(null);
+                } else {
+                    itemDateDto.setLastBooking(null);
+                    itemDateDto.setNextBooking(BookingMapper.toBookingDateDto(bookingsList.get(0)));
+                }
+            } else {
+                int i = -1;
+                do {
+                    i++;
+                } while (bookingsList.get(i).getStart().isBefore(LocalDateTime.now()));
+                itemDateDto.setNextBooking(BookingMapper.toBookingDateDto(bookingsList.get(i)));
+                itemDateDto.setLastBooking(BookingMapper.toBookingDateDto(bookingsList.get(i - 1)));
+            }
+        } else {
+            itemDateDto.setLastBooking(null);
+            itemDateDto.setNextBooking(null);
+        }
     }
 }

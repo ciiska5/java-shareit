@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingDateDto;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
-import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -27,8 +27,8 @@ public class ItemDateDto {
     @NotNull
     private Boolean available; // статус о том, доступна или нет вещь для аренды
 
-    private ItemRequest request; //если вещь была создана по запросу другого пользователя, то в этом
-    //поле будет храниться ссылка на соответствующий запрос.
+    private ItemRequestDto request; //если вещь была создана по запросу другого пользователя, то в этом
+                                    //поле будет храниться ссылка на соответствующий запрос.
 
     private BookingDateDto lastBooking; //последнее бронирование
 
@@ -36,7 +36,7 @@ public class ItemDateDto {
 
     private List<CommentDto> comments; // список отзывов
 
-    public ItemDateDto(Long id, String name, String description, Boolean available, ItemRequest request) {
+    public ItemDateDto(Long id, String name, String description, Boolean available, ItemRequestDto request) {
         this.id = id;
         this.name = name;
         this.description = description;

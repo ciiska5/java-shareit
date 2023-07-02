@@ -1,19 +1,19 @@
 package ru.practicum.shareit.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Шаблон объекта ItemRequest для хранилища
  */
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -32,5 +32,5 @@ public class ItemRequest {
     @JoinColumn(name = "requestor_id")
     private User requestor; // пользователь, создавший запрос
 
-    private Date created;// дата и время создания
+    private LocalDateTime created;// дата и время создания
 }
