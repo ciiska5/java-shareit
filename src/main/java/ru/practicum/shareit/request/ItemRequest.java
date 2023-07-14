@@ -1,23 +1,36 @@
 package ru.practicum.shareit.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Date;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 /**
- * TODO Sprint add-item-requests.
+ * Шаблон объекта ItemRequest для хранилища
  */
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "requests")
 public class ItemRequest {
 
-    private long id; //уникальный идентификатор запроса
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; //уникальный идентификатор запроса
+
+    @NotBlank
+    @Column(length = 3000, nullable = false)
     private String description; //текст запроса, содержащий описание требуемой вещи
+
+    @ManyToOne
+    @JoinColumn(name = "requestor_id")
     private User requestor; // пользователь, создавший запрос
-    private Date created;// дата и время создания
+
+    private LocalDateTime created;// дата и время создания
 }
