@@ -39,7 +39,7 @@ public class BookingControllerTest {
     @Autowired
     MockMvc mvc;
 
-    private final String USER_KEY = "X-Sharer-User-Id";
+    private final String USERKEY = "X-Sharer-User-Id";
     private final BookingDto testBookingDto = new BookingDto();
 
     @BeforeEach
@@ -61,7 +61,7 @@ public class BookingControllerTest {
         mvc.perform(post("/bookings")
                         .content(objectMapper.writeValueAsString(testBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 2L)
+                        .header(USERKEY, 2L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -82,7 +82,7 @@ public class BookingControllerTest {
         mvc.perform(patch("/bookings/1")
                         .content(objectMapper.writeValueAsString(testBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 2L)
+                        .header(USERKEY, 2L)
                         .queryParam("approved", String.valueOf(true))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -102,7 +102,7 @@ public class BookingControllerTest {
         mvc.perform(get("/bookings/1")
                         .content(objectMapper.writeValueAsString(testBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 2L)
+                        .header(USERKEY, 2L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -121,7 +121,7 @@ public class BookingControllerTest {
         mvc.perform(get("/bookings")
                         .content(objectMapper.writeValueAsString(testBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 2L)
+                        .header(USERKEY, 2L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -140,7 +140,7 @@ public class BookingControllerTest {
         mvc.perform(get("/bookings/owner")
                         .content(objectMapper.writeValueAsString(testBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 2L)
+                        .header(USERKEY, 2L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -36,7 +36,7 @@ public class ItemRequestControllerTest {
     @Autowired
     MockMvc mvc;
 
-    private final String USER_KEY = "X-Sharer-User-Id";
+    private final String USERKEY = "X-Sharer-User-Id";
     private final ItemRequestDto testItemRequestDto = new ItemRequestDto();
 
     @BeforeEach
@@ -56,7 +56,7 @@ public class ItemRequestControllerTest {
         mvc.perform(post("/requests")
                         .content(objectMapper.writeValueAsString(testItemRequestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -67,14 +67,14 @@ public class ItemRequestControllerTest {
 
     @Test
     void getAllByRequestorTest() throws Exception {
-        Mockito.
-                when(itemRequestService.getAllByRequestor(anyLong()))
+        Mockito
+                .when(itemRequestService.getAllByRequestor(anyLong()))
                 .thenReturn(List.of(testItemRequestDto));
 
         mvc.perform(get("/requests")
                         .content(objectMapper.writeValueAsString(testItemRequestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -92,7 +92,7 @@ public class ItemRequestControllerTest {
         mvc.perform(get("/requests/all")
                         .content(objectMapper.writeValueAsString(testItemRequestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -110,7 +110,7 @@ public class ItemRequestControllerTest {
         mvc.perform(get("/requests/1")
                         .content(objectMapper.writeValueAsString(testItemRequestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -408,7 +408,7 @@ public class ItemServiceTest {
         testBooking.setStatus(BookingStatus.APPROVED);
         Mockito
                 .when(mockBookingRepository.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(
-                        anyLong(), anyLong(), any(BookingStatus.class) , any(LocalDateTime.class))
+                        anyLong(), anyLong(), any(BookingStatus.class), any(LocalDateTime.class))
                 )
                 .thenReturn(List.of(testBooking));
 
@@ -488,7 +488,7 @@ public class ItemServiceTest {
                 .thenReturn(Optional.of(testItem));
         Mockito
                 .when(mockBookingRepository.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(
-                        anyLong(), anyLong(), any(BookingStatus.class) , any(LocalDateTime.class))
+                        anyLong(), anyLong(), any(BookingStatus.class), any(LocalDateTime.class))
                 )
                 .thenReturn(List.of());
 

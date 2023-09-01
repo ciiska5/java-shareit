@@ -103,7 +103,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     //добавление списка вещей (ответов) к запросу
-    private void addItemListToItemRequestDto (ItemRequestDto itemRequestDto) {
+    private void addItemListToItemRequestDto(ItemRequestDto itemRequestDto) {
         itemRequestDto.setItems(itemRepository.findAllByRequestId(itemRequestDto.getId())
                 .stream()
                 .map(ItemMapper::toItemDto)

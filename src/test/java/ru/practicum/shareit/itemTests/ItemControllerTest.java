@@ -39,7 +39,7 @@ public class ItemControllerTest {
     @Autowired
     MockMvc mvc;
 
-    private final String USER_KEY = "X-Sharer-User-Id";
+    private final String USERKEY = "X-Sharer-User-Id";
     private final ItemDto testItemDto = new ItemDto();
     private final ItemDateDto testItemDateDto = new ItemDateDto();
 
@@ -70,7 +70,7 @@ public class ItemControllerTest {
         mvc.perform(post("/items")
                     .content(objectMapper.writeValueAsString(testItemDto))
                     .characterEncoding(StandardCharsets.UTF_8)
-                    .header(USER_KEY, 1L)
+                    .header(USERKEY, 1L)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -91,7 +91,7 @@ public class ItemControllerTest {
         mvc.perform(patch("/items/1")
                         .content(objectMapper.writeValueAsString(testItemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -111,7 +111,7 @@ public class ItemControllerTest {
         mvc.perform(get("/items/1")
                         .content(objectMapper.writeValueAsString(testItemDateDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -134,7 +134,7 @@ public class ItemControllerTest {
         mvc.perform(get("/items")
                         .content(objectMapper.writeValueAsString(testItemDateDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -157,7 +157,7 @@ public class ItemControllerTest {
         mvc.perform(get("/items/search")
                         .content(objectMapper.writeValueAsString(testItemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .queryParam("text", "AppLE")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -184,7 +184,7 @@ public class ItemControllerTest {
         mvc.perform(post("/items/1/comment")
                         .content(objectMapper.writeValueAsString(testCommentDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(USER_KEY, 1L)
+                        .header(USERKEY, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
