@@ -393,6 +393,30 @@ public class BookingServiceTest {
     }
 
     @Test
+    void getAllBookingsOfUserWithUnknownStateTest() {
+        testItem.setOwner(testItemOwner);
+
+        testBooking.setItem(testItem);
+        testBooking.setBooker(testUser);
+        testBooking.setStatus(BookingStatus.APPROVED);
+        Mockito
+                .when(mockUserRepository.findById(anyLong()))
+                .thenReturn(Optional.of(testUser));
+        Mockito
+                .when(mockBookingRepository.findAllByBooker(any(), any()))
+                .thenReturn(new PageImpl<>(List.of(testBooking)));
+
+        UnknownBookingStatusException error = Assertions.assertThrows(
+                UnknownBookingStatusException.class, () -> bookingServ
+                        .getAllBookingsOfUser(1L, "UNKNOWN", 0, 1)
+        );
+
+        Assertions.assertEquals(
+                "Unknown state: UNSUPPORTED_STATUS", error.getMessage()
+        );
+    }
+
+    @Test
     void getAllBookedItemsOfUserTest() {
         testItem.setOwner(testItemOwner);
 
@@ -412,5 +436,29 @@ public class BookingServiceTest {
         BookingDto foundBookingDto = foundBookedItemsDtoList.get(0);
         Assertions.assertEquals(testBooking.getId(), foundBookingDto.getId());
         Assertions.assertEquals(testBooking.getBooker().getId(), foundBookingDto.getBooker().getId());
+    }
+
+    @Test
+    void getAllBookedItemsOfUserWithUnknownStatusTest() {
+        testItem.setOwner(testItemOwner);
+
+        testBooking.setItem(testItem);
+        testBooking.setBooker(testUser);
+        testBooking.setStatus(BookingStatus.APPROVED);
+        Mockito
+                .when(mockUserRepository.findById(anyLong()))
+                .thenReturn(Optional.of(testUser));
+        Mockito
+                .when(mockBookingRepository.findAllByItemOwner(any(), any()))
+                .thenReturn(new PageImpl<>(List.of(testBooking)));
+
+        UnknownBookingStatusException error = Assertions.assertThrows(
+                UnknownBookingStatusException.class, () -> bookingServ
+                        .getAllBookedItemsOfUser(1L, "UNKNOWN", 0, 1)
+        );
+
+        Assertions.assertEquals(
+                "Unknown state: UNSUPPORTED_STATUS", error.getMessage()
+        );
     }
 }

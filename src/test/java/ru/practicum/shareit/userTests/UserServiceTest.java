@@ -11,6 +11,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -68,6 +69,18 @@ public class UserServiceTest {
                 .assertThrows(UserNotFoundException.class, () -> userService.getUserById(2L));
 
         Assertions.assertEquals("Пользователь с id 2 не найден", error.getMessage());
+    }
+
+    @Test
+    void getAllUsersTest() {
+        Mockito
+                .when(mockUserRepository.findAll())
+                .thenReturn(List.of(UserMapper.toUser(testUserDto)));
+
+        List<UserDto> foundUserDtoList = userService.getAllUsers();
+
+        Assertions.assertEquals(foundUserDtoList.get(0), testUserDto);
+        Assertions.assertEquals(foundUserDtoList.size(), 1);
     }
 
     @Test

@@ -17,14 +17,7 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleEmailExistsException(final EmailExistsException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-
-    @ExceptionHandler({EmptyEmailException.class, ItemAlreadyBookedException.class, BookingDateException.class,
+    @ExceptionHandler({ItemAlreadyBookedException.class, BookingDateException.class,
             UnknownBookingStatusException.class, BookingBadRequest.class, PaginationParamException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(final RuntimeException e) {
