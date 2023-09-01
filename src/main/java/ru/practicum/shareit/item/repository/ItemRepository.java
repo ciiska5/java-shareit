@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +14,7 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     //поиск предметов по id пользователя
-    List<Item> findAllItemsByOwnerId(Long ownerId);
+    Page<Item> findAllItemsByOwnerId(Long ownerId, Pageable pageable);
 
     //поиск вещей по тексту
     @Query(
@@ -20,7 +22,11 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
                     " WHERE LOWER(i.name) LIKE CONCAT('%', :text, '%')" +
                     " OR " +
                     " LOWER(i.description) LIKE CONCAT('%', :text, '%')",
+            countQuery = "SELECT count(*) FROM items i",
             nativeQuery = true
     )
-    List<Item> findAllItemsByText(@Param("text") String text);
+    Page<Item> findAllItemsByText(@Param("text") String text, Pageable pageable);
+
+    //поиск вещей по id запроса
+    List<Item> findAllByRequestId(Long requestId);
 }

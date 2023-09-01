@@ -2,15 +2,14 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.status.BookingStatus;
-import ru.practicum.shareit.exception.BookingBadRequest;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.mapper.CommentMapper;
 import ru.practicum.shareit.item.comment.model.Comment;
@@ -20,6 +19,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -37,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
@@ -44,6 +46,15 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.toItem(itemDto);
         User user = checkUsersExistenceById(userId);
         item.setOwner(user);
+
+        //если вещь добавлена на запрос
+        Long requestId = itemDto.getRequestId();
+        if (requestId != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(requestId)
+                    .orElseThrow(() -> new ItemRequestNotFoundException("Запрос с id = " + requestId + " не найден."));
+            item.setRequest(itemRequest);
+        }
+
         item = itemRepository.save(item);
         log.info("Пользователем с id = {} добавлена вещь c id = {}.", userId, item.getId());
         return ItemMapper.toItemDto(item);
@@ -98,9 +109,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDateDto> getAllItemsOfUser(Long userId) {
+    public List<ItemDateDto> getAllItemsOfUser(Long userId, int from, int size) {
         checkUsersExistenceById(userId);
-        List<Item> userItems = itemRepository.findAllItemsByOwnerId(userId);
+        checkPaginationParams(from, size);
+        List<Item> userItems = itemRepository.findAllItemsByOwnerId(userId, PageRequest.of(from, size)).toList();
         List<ItemDateDto> userItemsDateDto = new ArrayList<>();
         userItems.forEach(item -> userItemsDateDto.add(ItemMapper.toItemDateDto(item)));
 
@@ -127,13 +139,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDto> getItemsByRequestText(Long userId, String text) {
+    public List<ItemDto> getItemsByRequestText(Long userId, String text, int from, int size) {
         checkUsersExistenceById(userId);
+        checkPaginationParams(from, size);
         List<Item> foundItems = new ArrayList<>();
 
         if (!text.isEmpty()) {
             String lowerCaseText = text.toLowerCase();
-            List<Item> items = itemRepository.findAllItemsByText(lowerCaseText);
+            List<Item> items = itemRepository.findAllItemsByText(lowerCaseText, PageRequest.of(from, size)).toList();
             foundItems = items
                     .stream()
                     .filter(item -> item.getAvailable().equals(Boolean.TRUE))
@@ -191,7 +204,7 @@ public class ItemServiceImpl implements ItemService {
     //проверка вещи на существование
     private Item checkItemsExistenceById(Long itemId) {
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id = " + itemId + " не найден."));
+                .orElseThrow(() -> new ItemNotFoundException("Вещь с id = " + itemId + " не найдена."));
     }
 
     //присваивание даты последнего и ближайшего следующего бронирования для каждой вещи
@@ -217,6 +230,13 @@ public class ItemServiceImpl implements ItemService {
         } else {
             itemDateDto.setLastBooking(null);
             itemDateDto.setNextBooking(null);
+        }
+    }
+
+    //проверка параметров пагинации
+    private void checkPaginationParams(int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new PaginationParamException("Некорректно заданы параметры пагинации");
         }
     }
 }

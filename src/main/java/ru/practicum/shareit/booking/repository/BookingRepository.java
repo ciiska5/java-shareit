@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,49 +15,49 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     //все букинги арендодатора со статусом ALL
-    List<Booking> findAllByBooker(User booker, Sort sort);
+    Page<Booking> findAllByBooker(User booker, Pageable pageable);
 
     //все букинги арендодатора со статусом CURRENT
-    List<Booking> findAllByBookerAndStartBeforeAndEndAfter(
-            User booker, LocalDateTime start, LocalDateTime end, Sort sort
+    Page<Booking> findAllByBookerAndStartBeforeAndEndAfter(
+            User booker, LocalDateTime start, LocalDateTime end, Pageable pageable
     );
 
     //все букинги арендодатора со статусом PAST
-    List<Booking> findAllByBookerAndEndBefore(
-            User booker, LocalDateTime end, Sort sort
+    Page<Booking> findAllByBookerAndEndBefore(
+            User booker, LocalDateTime end, Pageable pageable
     );
 
     //все букинги арендодатора со статусом FUTURE
-    List<Booking> findAllByBookerAndStartAfter(
-            User booker, LocalDateTime start, Sort sort
+    Page<Booking> findAllByBookerAndStartAfter(
+            User booker, LocalDateTime start, Pageable pageable
     );
 
     //все букинги арендодатора со статусом WAITING и REJECTED
-    List<Booking> findAllByBookerAndStatusEquals(
-            User booker, BookingStatus status, Sort sort
+    Page<Booking> findAllByBookerAndStatusEquals(
+            User booker, BookingStatus status, Pageable pageable
     );
 
     //все букинги арендодателя со статусом ALL
-    List<Booking> findAllByItemOwner(User owner, Sort sort);
+    Page<Booking> findAllByItemOwner(User owner, Pageable pageable);
 
     //все букинги арендодателя со статусом CURRENT
-    List<Booking> findAllByItemOwnerAndStartBeforeAndEndAfter(
-            User owner, LocalDateTime start, LocalDateTime end, Sort sort
+    Page<Booking> findAllByItemOwnerAndStartBeforeAndEndAfter(
+            User owner, LocalDateTime start, LocalDateTime end, Pageable pageable
     );
 
     //все букинги арендодателя со статусом PAST
-    List<Booking> findAllByItemOwnerAndEndBefore(
-            User owner, LocalDateTime end, Sort sort
+    Page<Booking> findAllByItemOwnerAndEndBefore(
+            User owner, LocalDateTime end, Pageable pageable
     );
 
     //все букинги арендодателя со статусом FUTURE
-    List<Booking> findAllByItemOwnerAndStartAfter(
-            User owner, LocalDateTime start, Sort sort
+    Page<Booking> findAllByItemOwnerAndStartAfter(
+            User owner, LocalDateTime start, Pageable pageable
     );
 
     //все букинги арендодателя со статусом WAITING и REJECTED
-    List<Booking> findAllByItemOwnerAndStatusEquals(
-            User owner, BookingStatus status, Sort sort
+    Page<Booking> findAllByItemOwnerAndStatusEquals(
+            User owner, BookingStatus status, Pageable pageable
     );
 
     //получение букингов для определённой вещи по возрастанию даты начала бронирования
