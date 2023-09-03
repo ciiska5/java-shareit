@@ -30,7 +30,7 @@ public class BookingDtoTest {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathValue("$.start").isEqualTo(bookingDto.getStart().format(dateFormatter));
-        assertThat(result).extractingJsonPathValue("$.end").isEqualTo(bookingDto.getEnd().format(dateFormatter));
+        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo(bookingDto.getStart().format(dateFormatter));
+        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo(bookingDto.getEnd().format(dateFormatter));
     }
 }
