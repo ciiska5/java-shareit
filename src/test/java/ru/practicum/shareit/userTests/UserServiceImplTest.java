@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 
-public class UserServiceTest {
+public class UserServiceImplTest {
     private final UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
 
     private UserServiceImpl userService;

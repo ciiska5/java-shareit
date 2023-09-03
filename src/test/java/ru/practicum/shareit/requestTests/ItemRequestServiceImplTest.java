@@ -7,7 +7,6 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.exception.ItemRequestNotFoundException;
-import ru.practicum.shareit.exception.PaginationParamException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -21,14 +20,11 @@ import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 
-public class ItemRequestServiceTest {
+public class ItemRequestServiceImplTest {
 
     private final UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
     private final ItemRepository mockItemRepository = Mockito.mock(ItemRepository.class);
@@ -99,13 +95,16 @@ public class ItemRequestServiceTest {
     void getAllRequestsByReqestorTest() {
         Mockito
                 .when(mockUserRepository.findById(anyLong()))
-                .thenReturn(Optional.of(new User()));
+                .thenReturn(Optional.of(new User(1L, "Altair", "ubisoft@gmail.com")));
         Mockito
                 .when(mockItemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(anyLong()))
                 .thenReturn(List.of(testItemRequest));
+
+        testItem.setRequest(testItemRequest);
         Mockito
-                .when(mockItemRepository.findAllByRequestId(anyLong()))
+                .when(mockItemRepository.findByRequestIn(anyList()))
                 .thenReturn(List.of(testItem));
+
         ItemRequestDto testItemRequestDto = ItemRequestMapper.toItemRequestDto(testItemRequest);
         ItemDto testItemDto = ItemMapper.toItemDto(testItem);
         testItemRequestDto.setItems(List.of(testItemDto));
@@ -138,8 +137,10 @@ public class ItemRequestServiceTest {
                         any(User.class), any(Pageable.class))
                 )
                 .thenReturn(new PageImpl<>(List.of(testItemRequest)));
+
+        testItem.setRequest(testItemRequest);
         Mockito
-                .when(mockItemRepository.findAllByRequestId(anyLong()))
+                .when(mockItemRepository.findByRequestIn(anyList()))
                 .thenReturn(List.of(testItem));
 
         ItemRequestDto testItemRequestDto = ItemRequestMapper.toItemRequestDto(testItemRequest);
@@ -170,10 +171,10 @@ public class ItemRequestServiceTest {
                 .when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.of(new User()));
 
-        PaginationParamException error = Assertions.assertThrows(
-                PaginationParamException.class, () -> itemRequestService.getAllItemRequests(2L, -1, 0));
+        Exception error = Assertions.assertThrows(
+                Exception.class, () -> itemRequestService.getAllItemRequests(2L, -1, 0));
 
-        Assertions.assertEquals("Некорректно заданы параметры пагинации", error.getMessage());
+        Assertions.assertEquals("Page index must not be less than zero", error.getMessage());
     }
 
     @Test

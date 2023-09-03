@@ -19,6 +19,8 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,13 +30,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     private final UserDto testUserDto = new UserDto();
 
@@ -60,6 +62,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(testUserDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(testUserDto.getName()), String.class))
                 .andExpect(jsonPath("$.email", is(testUserDto.getEmail()), String.class));
+
+        verify(userService, times(1)).addNewUser(any());
     }
 
     @Test
@@ -77,6 +81,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(testUserDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(testUserDto.getName()), String.class))
                 .andExpect(jsonPath("$.email", is(testUserDto.getEmail()), String.class));
+
+        verify(userService, times(1)).getUserById(anyLong());
     }
 
     @Test
@@ -95,6 +101,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(testUserDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(testUserDto.getName()), String.class))
                 .andExpect(jsonPath("$.email", is(testUserDto.getEmail()), String.class));
+
+        verify(userService, times(1)).updateUser(any(), anyLong());
     }
 
     @Test
@@ -112,6 +120,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].id", is(testUserDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].name", is(testUserDto.getName()), String.class))
                 .andExpect(jsonPath("$[0].email", is(testUserDto.getEmail()), String.class));
+
+        verify(userService, times(1)).getAllUsers();
     }
 
     @Test
@@ -127,6 +137,8 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        verify(userService, times(1)).deleteUserById(anyLong());
     }
 
 }

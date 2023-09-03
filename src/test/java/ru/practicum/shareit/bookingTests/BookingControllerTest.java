@@ -22,6 +22,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,13 +33,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = BookingController.class)
 public class BookingControllerTest {
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     private static final String USER_KEY = "X-Sharer-User-Id";
     private final BookingDto testBookingDto = new BookingDto();
@@ -69,6 +71,8 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.item", is(testBookingDto.getItem()), ItemDateDto.class))
                 .andExpect(jsonPath("$.booker", is(testBookingDto.getBooker()), UserDto.class))
                 .andExpect(jsonPath("$.status", is(testBookingDto.getStatus().toString()), String.class));
+
+        verify(bookingService, times(1)).createNewBooking(any(), anyLong());
     }
 
     @Test
@@ -91,6 +95,8 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.item", is(testBookingDto.getItem()), ItemDateDto.class))
                 .andExpect(jsonPath("$.booker", is(testBookingDto.getBooker()), UserDto.class))
                 .andExpect(jsonPath("$.status", is(testBookingDto.getStatus().toString()), String.class));
+
+        verify(bookingService, times(1)).approveRequest(anyLong(), anyLong(), any());
     }
 
     @Test
@@ -110,6 +116,8 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.item", is(testBookingDto.getItem()), ItemDateDto.class))
                 .andExpect(jsonPath("$.booker", is(testBookingDto.getBooker()), UserDto.class))
                 .andExpect(jsonPath("$.status", is(testBookingDto.getStatus().toString()), String.class));
+
+        verify(bookingService, times(1)).getById(anyLong(), anyLong());
     }
 
     @Test
@@ -129,6 +137,8 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[0].item", is(testBookingDto.getItem()), ItemDateDto.class))
                 .andExpect(jsonPath("$[0].booker", is(testBookingDto.getBooker()), UserDto.class))
                 .andExpect(jsonPath("$[0].status", is(testBookingDto.getStatus().toString()), String.class));
+
+        verify(bookingService, times(1)).getAllBookingsOfUser(anyLong(), any(), anyInt(), anyInt());
     }
 
     @Test
@@ -148,5 +158,7 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[0].item", is(testBookingDto.getItem()), ItemDateDto.class))
                 .andExpect(jsonPath("$[0].booker", is(testBookingDto.getBooker()), UserDto.class))
                 .andExpect(jsonPath("$[0].status", is(testBookingDto.getStatus().toString()), String.class));
+
+        verify(bookingService, times(1)).getAllBookedItemsOfUser(anyLong(), any(), anyInt(), anyInt());
     }
 }

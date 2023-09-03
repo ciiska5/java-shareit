@@ -17,10 +17,10 @@ import java.util.List;
 @DataJpaTest
 public class ItemRepositoryTest {
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
 
     private User initTestUser() {
         User testUser = new User();

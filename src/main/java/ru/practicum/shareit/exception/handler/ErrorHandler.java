@@ -18,7 +18,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({ItemAlreadyBookedException.class, BookingDateException.class,
-            UnknownBookingStatusException.class, BookingBadRequest.class, PaginationParamException.class})
+            UnknownBookingStatusException.class, BookingBadRequest.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());

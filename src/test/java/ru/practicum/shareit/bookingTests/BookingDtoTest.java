@@ -8,13 +8,15 @@ import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 public class BookingDtoTest {
     @Autowired
-    JacksonTester<BookingDto> jacksonTester;
+    private JacksonTester<BookingDto> jacksonTester;
 
     @Test
     void bookingDtoTest() throws Exception {
@@ -25,8 +27,11 @@ public class BookingDtoTest {
 
         JsonContent<BookingDto> result = jacksonTester.write(bookingDto);
 
+        String datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).hasJsonPathStringValue("$.start");
-        assertThat(result).hasJsonPathStringValue("$.end");
+        assertThat(result).extractingJsonPathValue("$.start").isEqualTo(bookingDto.getStart().format(dateFormatter));
+        assertThat(result).extractingJsonPathValue("$.end").isEqualTo(bookingDto.getEnd().format(dateFormatter));
     }
 }

@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class ItemDateDtoTest {
     @Autowired
-    JacksonTester<ItemDateDto> jacksonTester;
+    private JacksonTester<ItemDateDto> jacksonTester;
 
     @Test
     void itemDateDtoTest() throws Exception {

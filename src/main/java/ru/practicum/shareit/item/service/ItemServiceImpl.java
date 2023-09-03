@@ -111,7 +111,6 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemDateDto> getAllItemsOfUser(Long userId, int from, int size) {
         checkUsersExistenceById(userId);
-        checkPaginationParams(from, size);
         List<Item> userItems = itemRepository.findAllItemsByOwnerId(userId, PageRequest.of(from, size)).toList();
         List<ItemDateDto> userItemsDateDto = new ArrayList<>();
         userItems.forEach(item -> userItemsDateDto.add(ItemMapper.toItemDateDto(item)));
@@ -141,7 +140,6 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemDto> getItemsByRequestText(Long userId, String text, int from, int size) {
         checkUsersExistenceById(userId);
-        checkPaginationParams(from, size);
         List<Item> foundItems = new ArrayList<>();
 
         if (!text.isEmpty()) {
@@ -230,13 +228,6 @@ public class ItemServiceImpl implements ItemService {
         } else {
             itemDateDto.setLastBooking(null);
             itemDateDto.setNextBooking(null);
-        }
-    }
-
-    //проверка параметров пагинации
-    private void checkPaginationParams(int from, int size) {
-        if (from < 0 || size <= 0) {
-            throw new PaginationParamException("Некорректно заданы параметры пагинации");
         }
     }
 }

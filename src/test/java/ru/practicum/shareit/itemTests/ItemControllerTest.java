@@ -22,6 +22,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,13 +33,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemController.class)
 public class ItemControllerTest {
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     private static final String USER_KEY = "X-Sharer-User-Id";
     private final ItemDto testItemDto = new ItemDto();
@@ -79,6 +81,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(testItemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(testItemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$.requestId", is(testItemDto.getRequestId()), Long.class));
+
+        verify(itemService, times(1)).addNewItem(any(), anyLong());
     }
 
     @Test
@@ -100,6 +104,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(testItemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(testItemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$.requestId", is(testItemDto.getRequestId()), Long.class));
+
+        verify(itemService, times(1)).updateItem(any(), anyLong(), anyLong());
     }
 
     @Test
@@ -123,6 +129,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.lastBooking", is(testItemDateDto.getLastBooking()), BookingDateDto.class))
                 .andExpect(jsonPath("$.nextBooking", is(testItemDateDto.getNextBooking()), BookingDateDto.class))
                 .andExpect(jsonPath("$.comments", is(testItemDateDto.getComments()), List.class));
+
+        verify(itemService, times(1)).getItemById(anyLong(), anyLong());
     }
 
     @Test
@@ -146,6 +154,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$[0].lastBooking", is(testItemDateDto.getLastBooking()), BookingDateDto.class))
                 .andExpect(jsonPath("$[0].nextBooking", is(testItemDateDto.getNextBooking()), BookingDateDto.class))
                 .andExpect(jsonPath("$[0].comments", is(testItemDateDto.getComments()), List.class));
+
+        verify(itemService, times(1)).getAllItemsOfUser(anyLong(), anyInt(), anyInt());
     }
 
     @Test
@@ -167,6 +177,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$[0].description", is(testItemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$[0].available", is(testItemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$[0].requestId", is(testItemDto.getRequestId()), Long.class));
+
+        verify(itemService, times(1)).getItemsByRequestText(anyLong(), anyString(), anyInt(), anyInt());
     }
 
     @Test
@@ -191,5 +203,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.id", is(testCommentDto.getId()), Long.class))
                 .andExpect(jsonPath("$.text", is(testCommentDto.getText()), String.class))
                 .andExpect(jsonPath("$.authorName", is(testCommentDto.getAuthorName()), String.class));
+
+        verify(itemService, times(1)).addNewCommentForItem(anyLong(), anyLong(), any());
     }
 }

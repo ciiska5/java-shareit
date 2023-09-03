@@ -109,7 +109,6 @@ public class BookingServImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingDto> getAllBookingsOfUser(Long userId, String state, int from, int size) {
-        checkPaginationParams(from, size);
         User booker = checkUsersExistenceById(userId);
 
         List<Booking> allBookingsOfUserList = new ArrayList<>();
@@ -151,7 +150,6 @@ public class BookingServImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingDto> getAllBookedItemsOfUser(Long userId, String state, int from, int size) {
-        checkPaginationParams(from, size);
         User owner = checkUsersExistenceById(userId);
 
         List<Booking> allBookedItemsOfOwnerList = new ArrayList<>();
@@ -206,12 +204,5 @@ public class BookingServImpl implements BookingService {
     private Booking checkBookingExistenceById(Long bookingId) {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Бронирование с id = " + bookingId + " не найдено."));
-    }
-
-    //проверка параметров пагинации
-    private void checkPaginationParams(int from, int size) {
-        if (from < 0 || size <= 0) {
-            throw new PaginationParamException("Некорректно заданы параметры пагинации");
-        }
     }
 }

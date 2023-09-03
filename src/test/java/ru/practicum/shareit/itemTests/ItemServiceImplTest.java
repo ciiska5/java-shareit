@@ -33,7 +33,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 
-public class ItemServiceTest {
+public class ItemServiceImplTest {
 
     private final ItemRepository mockItemRepository = Mockito.mock(ItemRepository.class);
     private final UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -327,10 +327,10 @@ public class ItemServiceTest {
                 .when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.of(testUser));
 
-        PaginationParamException error = Assertions.assertThrows(
-                PaginationParamException.class, () -> itemService.getAllItemsOfUser(2L, -1, 0));
+        Exception error = Assertions.assertThrows(
+                Exception.class, () -> itemService.getAllItemsOfUser(2L, -1, 0));
 
-        Assertions.assertEquals("Некорректно заданы параметры пагинации", error.getMessage());
+        Assertions.assertEquals("Page index must not be less than zero", error.getMessage());
     }
 
     @Test
@@ -382,12 +382,12 @@ public class ItemServiceTest {
                 .when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.of(testUser));
 
-        PaginationParamException error = Assertions.assertThrows(
-                PaginationParamException.class, () -> itemService.getItemsByRequestText(
+        Exception error = Assertions.assertThrows(
+                Exception.class, () -> itemService.getItemsByRequestText(
                         2L, "t", -1, 0)
         );
 
-        Assertions.assertEquals("Некорректно заданы параметры пагинации", error.getMessage());
+        Assertions.assertEquals("Page index must not be less than zero", error.getMessage());
     }
 
     @Test

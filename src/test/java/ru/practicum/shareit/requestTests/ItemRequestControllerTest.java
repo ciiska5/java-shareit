@@ -19,6 +19,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,13 +30,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemRequestController.class)
 public class ItemRequestControllerTest {
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @MockBean
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     private static final String USER_KEY = "X-Sharer-User-Id";
     private final ItemRequestDto testItemRequestDto = new ItemRequestDto();
@@ -63,6 +65,8 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.id", is(testItemRequestDto.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(testItemRequestDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.items", is(testItemRequestDto.getItems()), List.class));
+
+        verify(itemRequestService, times(1)).addNewRequest(anyLong(),any());
     }
 
     @Test
@@ -81,6 +85,8 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$[0].id", is(testItemRequestDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].description", is(testItemRequestDto.getDescription()), String.class))
                 .andExpect(jsonPath("$[0].items", is(testItemRequestDto.getItems()), List.class));
+
+        verify(itemRequestService, times(1)).getAllByRequestor(anyLong());
     }
 
     @Test
@@ -99,6 +105,8 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$[0].id", is(testItemRequestDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].description", is(testItemRequestDto.getDescription()), String.class))
                 .andExpect(jsonPath("$[0].items", is(testItemRequestDto.getItems()), List.class));
+
+        verify(itemRequestService, times(1)).getAllItemRequests(anyLong(), anyInt(), anyInt());
     }
 
     @Test
@@ -117,5 +125,7 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.id", is(testItemRequestDto.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(testItemRequestDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.items", is(testItemRequestDto.getItems()), List.class));
+
+        verify(itemRequestService, times(1)).getItemRequestById(anyLong(), anyLong());
     }
 }

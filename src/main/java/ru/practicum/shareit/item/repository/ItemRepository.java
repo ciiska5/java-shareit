@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.util.List;
 
@@ -29,4 +30,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     //поиск вещей по id запроса
     List<Item> findAllByRequestId(Long requestId);
+
+    //поиск списка вещей для спсика запросов
+    List<Item> findByRequestIn(List<ItemRequest> itemRequestList);
 }
