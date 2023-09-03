@@ -26,7 +26,7 @@ public class BookingDtoTest {
 
         JsonContent<BookingDto> result = jacksonTester.write(bookingDto);
 
-        String datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
+        String datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS";
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
