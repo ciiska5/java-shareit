@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.dto.ItemDateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 
 import java.util.ArrayList;
 
@@ -17,7 +16,7 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                ItemRequestMapper.toItemRequestDto(item.getRequest()),
+                item.getRequest() != null ? item.getRequest().getId() : null,
                 new ArrayList<>()
         );
     }
@@ -28,7 +27,7 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                ItemRequestMapper.toItemRequestDto(item.getRequest())
+                item.getRequest() != null ? item.getRequest().getId() : null
         );
     }
 

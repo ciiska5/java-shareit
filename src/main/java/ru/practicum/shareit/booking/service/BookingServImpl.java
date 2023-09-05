@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,39 +108,35 @@ public class BookingServImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> getAllBookingsOfUser(Long userId, String state) {
+    public List<BookingDto> getAllBookingsOfUser(Long userId, String state, int from, int size) {
         User booker = checkUsersExistenceById(userId);
 
         List<Booking> allBookingsOfUserList = new ArrayList<>();
+        Pageable pageable = PageRequest.of(from / size, size, sort);
 
         switch (state) {
             case "ALL":
-                allBookingsOfUserList.addAll(bookingRepository.findAllByBooker(booker, sort));
+                allBookingsOfUserList.addAll(bookingRepository.findAllByBooker(booker, pageable).toList());
                 break;
             case "CURRENT":
                 allBookingsOfUserList.addAll(bookingRepository.findAllByBookerAndStartBeforeAndEndAfter(
-                        booker, LocalDateTime.now(), LocalDateTime.now(), sort
-                ));
+                        booker, LocalDateTime.now(), LocalDateTime.now(), pageable).toList());
                 break;
             case "PAST":
                 allBookingsOfUserList.addAll(bookingRepository.findAllByBookerAndEndBefore(
-                        booker, LocalDateTime.now(), sort
-                ));
+                        booker, LocalDateTime.now(), pageable).toList());
                 break;
             case "FUTURE":
                 allBookingsOfUserList.addAll(bookingRepository.findAllByBookerAndStartAfter(
-                        booker, LocalDateTime.now(), sort
-                ));
+                        booker, LocalDateTime.now(), pageable).toList());
                 break;
             case "WAITING":
                 allBookingsOfUserList.addAll(bookingRepository.findAllByBookerAndStatusEquals(
-                        booker, BookingStatus.WAITING, sort
-                ));
+                        booker, BookingStatus.WAITING, pageable).toList());
                 break;
             case "REJECTED":
                 allBookingsOfUserList.addAll(bookingRepository.findAllByBookerAndStatusEquals(
-                        booker, BookingStatus.REJECTED, sort
-                ));
+                        booker, BookingStatus.REJECTED, pageable).toList());
                 break;
             default:
                 log.error("Неизвестный статус с параметром {}.", state);
@@ -151,39 +149,35 @@ public class BookingServImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> getAllBookedItemsOfUser(Long userId, String state) {
+    public List<BookingDto> getAllBookedItemsOfUser(Long userId, String state, int from, int size) {
         User owner = checkUsersExistenceById(userId);
 
         List<Booking> allBookedItemsOfOwnerList = new ArrayList<>();
+        Pageable pageable = PageRequest.of(from / size, size, sort);
 
         switch (state) {
             case "ALL":
-                allBookedItemsOfOwnerList.addAll(bookingRepository.findAllByItemOwner(owner, sort));
+                allBookedItemsOfOwnerList.addAll(bookingRepository.findAllByItemOwner(owner, pageable).toList());
                 break;
             case "CURRENT":
                 allBookedItemsOfOwnerList.addAll(bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfter(
-                        owner, LocalDateTime.now(), LocalDateTime.now(), sort
-                ));
+                        owner, LocalDateTime.now(), LocalDateTime.now(), pageable).toList());
                 break;
             case "PAST":
                 allBookedItemsOfOwnerList.addAll(bookingRepository.findAllByItemOwnerAndEndBefore(
-                        owner, LocalDateTime.now(), sort
-                ));
+                        owner, LocalDateTime.now(), pageable).toList());
                 break;
             case "FUTURE":
                 allBookedItemsOfOwnerList.addAll(bookingRepository.findAllByItemOwnerAndStartAfter(
-                        owner, LocalDateTime.now(), sort
-                ));
+                        owner, LocalDateTime.now(), pageable).toList());
                 break;
             case "WAITING":
                 allBookedItemsOfOwnerList.addAll(bookingRepository.findAllByItemOwnerAndStatusEquals(
-                        owner, BookingStatus.WAITING, sort
-                ));
+                        owner, BookingStatus.WAITING, pageable).toList());
                 break;
             case "REJECTED":
                 allBookedItemsOfOwnerList.addAll(bookingRepository.findAllByItemOwnerAndStatusEquals(
-                        owner, BookingStatus.REJECTED, sort
-                ));
+                        owner, BookingStatus.REJECTED, pageable).toList());
                 break;
             default:
                 log.error("Неизвестный статус с параметром {}.", state);
@@ -203,7 +197,7 @@ public class BookingServImpl implements BookingService {
     //проверка вещи на существование
     private Item checkItemsExistenceById(Long itemId) {
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new UserNotFoundException("Вещь с id = " + itemId + " не найден."));
+                .orElseThrow(() -> new ItemNotFoundException("Вещь с id = " + itemId + " не найдена."));
     }
 
     //проверка бронирования на существование

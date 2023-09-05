@@ -3,13 +3,14 @@ package ru.practicum.shareit.request.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * TODO Sprint add-item-requests.
+ * Шаблон объекта ItemRequest для пользователя
  */
 
 @Data
@@ -22,7 +23,7 @@ public class ItemRequestDto {
     @NotBlank
     private String description; //текст запроса, содержащий описание требуемой вещи
 
-    private UserDto requestor; // пользователь, создавший запрос
+    private List<ItemDto> items; // список ответов на запрос вещи
 
     private LocalDateTime created;// дата и время создания
 }

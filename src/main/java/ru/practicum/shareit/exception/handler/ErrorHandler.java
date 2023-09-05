@@ -10,20 +10,14 @@ import ru.practicum.shareit.exception.model.ErrorResponse;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler({UserNotFoundException.class, ItemNotFoundException.class, BookingNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class, ItemNotFoundException.class,
+            BookingNotFoundException.class, ItemRequestNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleEmailExistsException(final EmailExistsException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-
-    @ExceptionHandler({EmptyEmailException.class, ItemAlreadyBookedException.class, BookingDateException.class,
+    @ExceptionHandler({ItemAlreadyBookedException.class, BookingDateException.class,
             UnknownBookingStatusException.class, BookingBadRequest.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(final RuntimeException e) {

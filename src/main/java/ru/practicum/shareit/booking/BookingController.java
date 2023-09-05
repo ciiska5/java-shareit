@@ -1,12 +1,14 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -15,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
+@Validated
 public class BookingController {
 
     private final BookingService bookingService;
@@ -39,13 +42,17 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllBookingsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                 @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAllBookingsOfUser(userId, state);
+                                                 @RequestParam(defaultValue = "ALL", required = false) String state,
+                                                 @RequestParam(defaultValue = "0", required = false) @Min(0) int from,
+                                                 @RequestParam(defaultValue = "15", required = false) @Min(1) int size) {
+        return bookingService.getAllBookingsOfUser(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllBookedItemsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                    @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAllBookedItemsOfUser(userId, state);
+                                                    @RequestParam(defaultValue = "ALL", required = false) String state,
+                                                    @RequestParam(defaultValue = "0", required = false) @Min(0) int from,
+                                                    @RequestParam(defaultValue = "15", required = false) @Min(1) int size) {
+        return bookingService.getAllBookedItemsOfUser(userId, state, from, size);
     }
 }

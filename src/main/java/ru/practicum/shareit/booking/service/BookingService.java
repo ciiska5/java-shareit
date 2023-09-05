@@ -17,8 +17,10 @@ public interface BookingService {
     BookingDto getById(Long bookingId, Long userId);
 
     //Получение списка всех бронирований текущего пользователя (арендодатора)
-    List<BookingDto> getAllBookingsOfUser(Long userId, String state);
+    //параметры пагинации: from — индекс первого элемента, начиная с 0, и size — количество элементов для отображения.
+    List<BookingDto> getAllBookingsOfUser(Long userId, String state, int from, int size);
 
     //Получение списка всех бронирований текущего пользователя (арендодателя)
-    List<BookingDto> getAllBookedItemsOfUser(Long userId, String state);
+    //параметры пагинации: from — индекс первого элемента, начиная с 0, и size — количество элементов для отображения.
+    List<BookingDto> getAllBookedItemsOfUser(Long userId, String state, int from, int size);
 }

@@ -1,20 +1,28 @@
 package ru.practicum.shareit.request.mapper;
 
-import ru.practicum.shareit.request.ItemRequest;
+import org.springframework.stereotype.Component;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 
+import java.util.ArrayList;
+
+@Component
 public class ItemRequestMapper {
 
     public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
-        return new ItemRequestDto();
+        ItemRequestDto itemRequestDto = new ItemRequestDto();
+        itemRequestDto.setId(itemRequest.getId());
+        itemRequestDto.setDescription(itemRequest.getDescription());
+        itemRequestDto.setCreated(itemRequest.getCreated());
+        itemRequestDto.setItems(new ArrayList<>());
+        return itemRequestDto;
     }
 
     public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
         ItemRequest itemRequest = new ItemRequest();
-        itemRequest.setRequestor(UserMapper.toUser(itemRequestDto.getRequestor()));
         itemRequest.setDescription(itemRequestDto.getDescription());
         itemRequest.setCreated(itemRequestDto.getCreated());
+        itemRequest.setId(itemRequestDto.getId());
         return itemRequest;
     }
 }

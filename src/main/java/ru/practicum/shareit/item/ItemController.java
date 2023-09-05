@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDateDto;
@@ -8,6 +9,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -41,16 +44,22 @@ public class ItemController {
     }
 
     //просмотр всех вещей владельца (только самим владельцем)
+    //параметры пагинации: from — индекс первого элемента, начиная с 0, и size — количество элементов для отображения.
     @GetMapping
-    public List<ItemDateDto> getAllItemsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getAllItemsOfUser(userId);
+    public List<ItemDateDto> getAllItemsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                               @RequestParam(defaultValue = "0", required = false) @Min(0) int from,
+                                               @RequestParam(defaultValue = "15", required = false) @Min(1) int size) {
+        return itemService.getAllItemsOfUser(userId, from, size);
     }
 
     //поиск всех вещей арендодатором по совпадению слов в названии или описании
+    //параметры пагинации: from — индекс первого элемента, начиная с 0, и size — количество элементов для отображения.
     @GetMapping("/search")
     public List<ItemDto> getItemsByRequestText(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                               @RequestParam(name = "text") String text) {
-        return itemService.getItemsByRequestText(userId, text);
+                                               @RequestParam(name = "text") String text,
+                                               @RequestParam(defaultValue = "0", required = false) @Min(0) int from,
+                                               @RequestParam(defaultValue = "15", required = false) @Min(1) int size) {
+        return itemService.getItemsByRequestText(userId, text, from, size);
     }
 
     //добавление пользователем (userId) отзыва (commentDto) на вещь (itemId)
