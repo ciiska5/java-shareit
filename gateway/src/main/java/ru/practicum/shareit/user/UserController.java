@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserRequestDto;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Класс-контроллер сущности User
