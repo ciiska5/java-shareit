@@ -133,8 +133,8 @@ public class ItemRequestServiceImplTest {
                 .when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.of(new User()));
         Mockito
-                .when(mockItemRequestRepository.findAllByRequestorNotLikeOrderByCreatedAsc(
-                        any(User.class), any(Pageable.class))
+                .when(mockItemRequestRepository.findByRequestorIdNotOrderByCreatedAsc(
+                        any(), any(Pageable.class))
                 )
                 .thenReturn(new PageImpl<>(List.of(testItemRequest)));
 

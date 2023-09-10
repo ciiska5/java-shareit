@@ -33,7 +33,7 @@ public class ItemRequestController {
     //получить постранично список запросов, созданных другими пользователями от более новых к более старым.
     //для одной страницы: from — индекс первого элемента, начиная с 0, и size — количество элементов для отображения.
     @GetMapping("/all")
-    public List<ItemRequestDto> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestDto> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") long userId,
                                                    @RequestParam(defaultValue = "0", required = false) int from,
                                                    @RequestParam(defaultValue = "15", required = false) int size) {
         return itemRequestService.getAllItemRequests(userId, from, size);

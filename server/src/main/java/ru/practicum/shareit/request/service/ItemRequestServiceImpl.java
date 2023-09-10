@@ -62,11 +62,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     //параметры пагинации: from — индекс первого элемента, начиная с 0, и size — количество элементов для отображения.
     @Override
     @Transactional(readOnly = true)
-    public List<ItemRequestDto> getAllItemRequests(Long userId, int from, int size) {
-        User user = checkUsersExistenceById(userId);
+    public List<ItemRequestDto> getAllItemRequests(long userId, int from, int size) {
+        checkUsersExistenceById(userId);
 
         List<ItemRequest> itemRequestList = itemRequestRepository
-                .findAllByRequestorNotLikeOrderByCreatedAsc(user, PageRequest.of(from, size))
+                .findByRequestorIdNotOrderByCreatedAsc(userId, PageRequest.of(from, size))
                 .toList();
 
         log.info("Получен список всех запросов пользователя с id = {} . ", userId);
@@ -75,7 +75,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     //получить данные об одном конкретном запросе вместе с данными об ответах на него
     @Override
-    @Transactional(readOnly = true)
+    //@Transactional(readOnly = true)
     public ItemRequestDto getItemRequestById(Long userId, Long requestId) {
         checkUsersExistenceById(userId);
         ItemRequest itemRequest = itemRequestRepository.findById(requestId)

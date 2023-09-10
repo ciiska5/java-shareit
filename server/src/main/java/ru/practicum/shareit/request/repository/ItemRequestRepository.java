@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -16,5 +15,5 @@ public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> 
     List<ItemRequest> findAllByRequestorIdOrderByCreatedAsc(Long requestorId);
 
     //получение списока запросов постранично, созданных другими пользователями от более новых к более старым
-    Page<ItemRequest> findAllByRequestorNotLikeOrderByCreatedAsc(User requestor, Pageable pageable);
+    Page<ItemRequest> findByRequestorIdNotOrderByCreatedAsc(Long requestorId, Pageable pageable);
 }

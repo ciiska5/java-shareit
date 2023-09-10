@@ -14,7 +14,7 @@ public interface ItemRequestService {
 
     //получить постранично список запросов, созданных другими пользователями от более новых к более старым.
     //для одной страницы: from — индекс первого элемента, начиная с 0, и size — количество элементов для отображения.
-    List<ItemRequestDto> getAllItemRequests(Long userId, int from, int size);
+    List<ItemRequestDto> getAllItemRequests(long userId, int from, int size);
 
     //получить данные об одном конкретном запросе вместе с данными об ответах на него
     ItemRequestDto getItemRequestById(Long userId, Long requestId);

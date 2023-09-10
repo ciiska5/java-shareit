@@ -17,7 +17,7 @@ import javax.validation.constraints.Min;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/requests")
+@RequestMapping(path = "/requests")
 @Validated
 public class ItemRequestController {
 
@@ -41,10 +41,10 @@ public class ItemRequestController {
     //получить постранично список запросов, созданных другими пользователями от более новых к более старым.
     //для одной страницы: from — индекс первого элемента, начиная с 0, и size — количество элементов для отображения.
     @GetMapping("/all")
-    public ResponseEntity<Object> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") long userId,
                                                    @RequestParam(defaultValue = "0", required = false) @Min(0) int from,
                                                    @RequestParam(defaultValue = "15", required = false) @Min(1) int size) {
-        log.info("Get all item requests without user {}", userId);
+        log.info("Get all item requests of user={}", userId);
         return itemRequestClient.getAllItemRequests(userId, from, size);
     }
 
