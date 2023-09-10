@@ -12,12 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentRequestDto {
 
-    private Long id;//уникальный идентификатор комментария
-
     @NotBlank
     private String text;//содержимое комментария
-
-    private String authorName; // автор комментария
-
-    private LocalDateTime created; //дата создания комментария.
 }

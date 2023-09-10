@@ -14,7 +14,6 @@ public class CommentDto {
 
     private Long id;//уникальный идентификатор комментария
 
-    @NotBlank
     private String text;//содержимое комментария
 
     private String authorName; // автор комментария

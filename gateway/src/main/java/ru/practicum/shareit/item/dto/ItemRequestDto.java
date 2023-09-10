@@ -11,7 +11,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemRequestDto {
-    private Long id; //уникальный идентификатор вещи
 
     @NotBlank
     private String name; //краткое название

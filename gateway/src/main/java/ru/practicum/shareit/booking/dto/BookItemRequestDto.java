@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,9 +15,11 @@ import java.time.LocalDateTime;
 public class BookItemRequestDto {
     private Long id; // уникальный идентификатор бронирования
 
+    @NotNull
     @FutureOrPresent
     private LocalDateTime start; // дата и время начала бронирования
 
+    @NotNull
     @Future
     private LocalDateTime end; // дата и время конца бронирования
 }

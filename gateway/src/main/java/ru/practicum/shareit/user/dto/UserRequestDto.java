@@ -10,8 +10,6 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequestDto {
-
-    private Long id; // уникальный идентификатор пользователя
     @NotNull
     @NotBlank
     private String name; // имя или логин пользователя;

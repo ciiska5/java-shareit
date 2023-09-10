@@ -25,10 +25,10 @@ public class BookingController {
     private final BookingClient bookingClient;
 
     @PostMapping
-    public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                                           @RequestBody @Valid BookItemRequestDto requestDto) {
+    public ResponseEntity<Object> createNewBooking(@RequestBody @Valid BookItemRequestDto requestDto,
+                                                   @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Creating booking {}, userId={}", requestDto, userId);
-        return bookingClient.bookItem(userId, requestDto);
+        return bookingClient.createNewBooking(userId, requestDto);
     }
 
     @PatchMapping("/{bookingId}")
