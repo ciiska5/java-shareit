@@ -15,7 +15,7 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     //поиск предметов по id пользователя
-    Page<Item> findAllItemsByOwnerId(Long ownerId, Pageable pageable);
+    Page<Item> findAllItemsByOwnerIdOrderByIdAsc(Long ownerId, Pageable pageable);
 
     //поиск вещей по тексту
     @Query(

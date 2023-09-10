@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * Шаблон объекта ItemRequest для пользователя
@@ -15,6 +15,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class ItemRequestRequestDto {
 
-    @NotBlank
+    @NotNull
     private String description; //текст запроса, содержащий описание требуемой вещи
 }

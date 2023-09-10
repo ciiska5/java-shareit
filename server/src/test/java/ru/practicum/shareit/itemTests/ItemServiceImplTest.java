@@ -290,7 +290,7 @@ public class ItemServiceImplTest {
                 .when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.of(testUser));
         Mockito
-                .when(mockItemRepository.findAllItemsByOwnerId(anyLong(), any(Pageable.class)))
+                .when(mockItemRepository.findAllItemsByOwnerIdOrderByIdAsc(anyLong(), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(testItem)));
         Mockito
                 .when(mockBookingRepository.findAllByItemOwnerIdOrderByStartAsc(anyLong()))

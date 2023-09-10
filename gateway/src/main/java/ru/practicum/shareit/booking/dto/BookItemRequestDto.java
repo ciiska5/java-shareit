@@ -22,4 +22,7 @@ public class BookItemRequestDto {
     @NotNull
     @Future
     private LocalDateTime end; // дата и время конца бронирования
+
+    @NotNull
+    private Long itemId;// вещь, которую пользователь бронирует
 }

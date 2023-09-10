@@ -111,7 +111,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemDateDto> getAllItemsOfUser(Long userId, int from, int size) {
         checkUsersExistenceById(userId);
-        List<Item> userItems = itemRepository.findAllItemsByOwnerId(userId, PageRequest.of(from, size)).toList();
+        List<Item> userItems = itemRepository.findAllItemsByOwnerIdOrderByIdAsc(userId, PageRequest.of(from, size)).toList();
         List<ItemDateDto> userItemsDateDto = new ArrayList<>();
         userItems.forEach(item -> userItemsDateDto.add(ItemMapper.toItemDateDto(item)));
 

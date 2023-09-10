@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
-import ru.practicum.shareit.booking.dto.BookingState;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -51,10 +50,8 @@ public class BookingController {
                                               @RequestParam(name = "state", defaultValue = "ALL", required = false) String stateParam,
                                               @PositiveOrZero @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
                                               @Positive @RequestParam(name = "size", defaultValue = "15", required = false) @Min(1) Integer size) {
-        BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
-        return bookingClient.getAllBookingsOfUser(userId, state, from, size);
+        return bookingClient.getAllBookingsOfUser(userId, stateParam, from, size);
     }
 
     @GetMapping("/owner")
@@ -62,9 +59,7 @@ public class BookingController {
                                               @RequestParam(name = "state", defaultValue = "ALL", required = false) String stateParam,
                                               @PositiveOrZero @RequestParam(name = "from", defaultValue = "0", required = false) @Min(0) Integer from,
                                               @Positive @RequestParam(name = "size", defaultValue = "15", required = false) @Min(1) Integer size) {
-        BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Get owner's booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
-        return bookingClient.getAllBookedItemsOfUser(userId, state, from, size);
+        return bookingClient.getAllBookedItemsOfUser(userId, stateParam, from, size);
     }
 }
