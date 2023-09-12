@@ -4,7 +4,6 @@ import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 /**
@@ -24,7 +23,6 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //уникальный идентификатор запроса
 
-    @NotBlank
     @Column(length = 3000, nullable = false)
     private String description; //текст запроса, содержащий описание требуемой вещи
 

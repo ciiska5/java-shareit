@@ -6,7 +6,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -26,11 +25,9 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // уникальный идентификатор бронирования
 
-    @NotNull
     @Column(name = "start_date", nullable = false)
     private LocalDateTime start; // дата и время начала бронирования
 
-    @NotNull
     @Column(name = "end_date", nullable = false)
     private LocalDateTime end; // дата и время конца бронирования
 

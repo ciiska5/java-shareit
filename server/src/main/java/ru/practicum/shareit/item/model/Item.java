@@ -5,7 +5,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 
 /**
  * Шаблон объекта Item для хранилища
@@ -24,15 +23,12 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //уникальный идентификатор вещи
 
-    @NotBlank
     @Column(nullable = false)
     private String name; //краткое название
 
-    @NotBlank
     @Column(length = 3000, nullable = false)
     private String description; //развёрнутое описание
 
-    @NotNull
     private Boolean available; // статус о том, доступна или нет вещь для аренды
 
     @ManyToOne
